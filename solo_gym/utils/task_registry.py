@@ -139,6 +139,7 @@ class TaskRegistry:
         # parse sim params (convert to dict first)
         sim_params = {"sim": class_to_dict(env_cfg.sim)}
         sim_params = parse_sim_params(args, sim_params)
+
         # create environment instance
         env = task_class(
             cfg=env_cfg,

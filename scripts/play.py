@@ -47,8 +47,25 @@ def play(args: argparse.Namespace):
     obs = env.get_observations()
     # load policy
     train_cfg.runner.resume = True
-    ppo_runner, train_cfg = task_registry.make_alg_runner(env=env, name=args.task, args=args, train_cfg=train_cfg)
+
+    # add path to the trained model
+    # path='/home/lain/Documents/GitHub/wasabi/logs/flat_pi_plus_12/Dec29_23-39-17_wasabi/model_1000.pt'
+   
+    model_path = '/home/lain/Documents/GitHub/wasabi/logs/flat_pi_plus_12/Dec29_23-39-17_wasabi/model_1000.pt'
+    
+    ppo_runner, train_cfg = task_registry.make_alg_runner(
+        env=env, 
+        name=args.task, 
+        args=args, 
+        train_cfg=train_cfg,
+    #   train_path=path
+    )
+
+    # ppo_runner, train_cfg = task_registry.make_alg_runner(env=env, name=args.task, args=args, train_cfg=train_cfg)
     policy = ppo_runner.get_inference_policy(device=env.device)
+
+    print(f"手动加载预训练模型：{model_path}")
+    ppo_runner.load(model_path)  # 关键：通过 runner.load() 直接加载模型
 
     # export policy as a jit module and as onnx model (used to run it from C++)
     if EXPORT_POLICY:
@@ -133,3 +150,6 @@ def play(args: argparse.Namespace):
 if __name__ == "__main__":
     args = get_args()
     play(args)
+
+
+# python scripts/play.py --task pi_plus_12
